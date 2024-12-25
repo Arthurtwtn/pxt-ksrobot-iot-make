@@ -6,6 +6,42 @@
 //% weight=10 color=#00A6F0 icon="\uf1eb" block="KSRobot_IOT"
 
 namespace KSRobot_IOT {
+    // 確認WiFi已連接
+    function checkWifiConnection(): boolean {
+        if (!IOT_WIFI_CONNECTED) {
+            basic.showString("WiFi not connected")
+            return false
+        }
+        return true
+    }
+
+    /**
+     * 發送數據到Make.com Webhook
+     * @param payload 要發送的數據
+     */
+    //% blockId=make_com_post
+    //% weight=50
+    //% block="Make.com POST| payload %payload"
+    export function makeComPost(payload: string): void {
+        if (!checkWifiConnection()) {
+            return;
+        }
+
+        let host = "hook.eu2.make.com";
+        let endpoint = "/mqifgcm4mdudikywgdj97to6n3r4m3gb";
+        let fullUrl = host + endpoint;
+
+        serial.writeString("AT+HTML_POST?host="
+            + fullUrl
+            + "&header="
+            + "Content-Type:application/json"
+            + "&senddata="
+            + payload
+            + "=" + "\r\n");
+    }
+}
+
+namespace KSRobot_IOT {
 
     let IOT_WIFI_CONNECTED = false
     let IOT_MQTT_CONNECTED = false
